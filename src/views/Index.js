@@ -69,7 +69,7 @@ class Index extends React.Component {
 
   componentDidMount() {
     console.log("Getting chart data");
-    trae.get("http:localhost:1108/api/Stats")
+    trae.get("http:192.168.100.43:1108/api/Stats")
     .then((response) => {
       this.setState({
         chartData: response.results

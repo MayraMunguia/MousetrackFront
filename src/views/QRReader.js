@@ -49,14 +49,17 @@ class QRReader extends React.Component {
   handleForm = async (e) => {
     e.preventDefault();
     const data = {
-      id_usuario: this.state.userId
+      id_usuario: this.state.userId,
+      nombre : "Mayra",
+      a_paterno : "Munguia",
+      a_materno : "Palma",
     };
 
-    await fetch("http://localhost:1108/api/Acceso/", {
+    await fetch("http://192.168.100.43:1108/api/Acceso/", {
       method: 'post',
-      mode: "no-cors",
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Accept': 'application/json, text/plain, */*',
       },
       body: JSON.stringify(data)
     });

@@ -25,7 +25,7 @@ import trae from "trae";
 function Header(){
 
   const handleClick = async () => {
-    await fetch("http://localhost:1108/api/Initialize/", {
+    await fetch("http://192.168.100.43:1108/api/Initialize/", {
       method: 'post',
       mode: "no-cors",
       headers: {
