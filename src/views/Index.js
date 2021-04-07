@@ -21,29 +21,22 @@ import classnames from "classnames";
 // javascipt plugin for creating charts
 import Chart from "chart.js";
 // react plugin used to create charts
-import { Line, Bar } from "react-chartjs-2";
+import { Line } from "react-chartjs-2";
 // reactstrap components
 import {
-  Button,
   Card,
   CardHeader,
   CardBody,
-  NavItem,
-  NavLink,
-  Nav,
-  Progress,
-  Table,
   Container,
   Row,
-  Col
+  Col,
+  Alert
 } from "reactstrap";
 
 // core components
 import {
   chartOptions,
   parseOptions,
-  chartExample1,
-  chartExample2
 } from "variables/charts.js";
 
 import Header from "components/Headers/Header.js";
@@ -54,36 +47,85 @@ class Index extends React.Component {
   constructor(props){
     super(props);
     this.state = {
-      labels: [],
-      chartData: []
+      outliers: [],
+      chartData: {}
     };
     if (window.Chart) {
       parseOptions(Chart, chartOptions());
     }
+    this.getData = this.getData.bind(this);
   }
 
-  prettyHour(time) {
-    let localeSpecificTime = time.toLocaleTimeString();
-    return localeSpecificTime.replace(/:\d+ /, ' ');
-  }
+  getData(apiEndpoint) {
+    console.log("Getting chart data...");
+    fetch(apiEndpoint)
+    .then(res => res.json())
+    .then(res => {
+      let readings = res.res.map(i => i.toString())
+      let data = {
+        labels: [...Array(readings.length).keys()].map(i => i.toString()),
+        datasets: [
+          {
+            type: 'line',
+            label: 'upper',
+            borderColor: 'rgb(239, 39, 27)',
+            borderWidth: 2,
+            fill: false,
+            data: Array(readings.length).fill(res.limSuper),
+          },
+          {
+            type: 'line',
+            label: 'lower',
+            borderColor: 'rgb(239, 39, 27)',
+            borderWidth: 2,
+            fill: false,
+            data: Array(readings.length).fill(res.limInfer),
+          },
+          {
+            type: 'line',
+            label: 'readings',
+            borderColor: 'rgb(22, 224, 189)',
+            borderWidth: 2,
+            fill: false,
+            data: readings,
+          }
+        ]
+      };
 
-  componentDidMount() {
-    console.log("Getting chart data");
-    trae.get("http:192.168.100.43:1108/api/Stats")
-    .then((response) => {
-      this.setState({
-        chartData: response.results
-      });
+      let outliers = readings.filter(e => e > res.limSuper || e < res.limInfer);
+
+      this.setState({chartData: data, outliers: outliers});
     })
     .catch(err => console.error(err));
   }
 
+  componentDidMount() {
+    // CONFIGURE API REST HERE
+    this.getData("http://your_ip_here:1108/api/Stats")
+  }
+
   render() {
+    const OutlierList = (props) => { 
+    return (
+      <Alert color="danger">
+        <span>Se han identificado los siguientes outliers:</span>
+        <ul>
+          {props.outliers.map(outlier => (
+              <li>{outlier.toString()}</li>               
+          ))}
+        </ul>
+      </Alert>
+      )
+    }
     return (
       <>
         <Header />
         {/* Page content */}
         <Container className="mt--7" fluid>
+        {this.state.outliers.length > 0 &&
+        (
+          <OutlierList outliers={this.state.outliers}/>
+        )}
           <Row>
             <Col className="mb-5 mb-xl-0" xl="12">
               <Card className="bg-gradient-default shadow">
@@ -91,62 +133,15 @@ class Index extends React.Component {
                   <Row className="align-items-center">
                     <div className="col">
                       <h6 className="text-uppercase text-light ls-1 mb-1">
-                        Entradas
+                        Lecturas
                       </h6>
-                      <h2 className="text-white mb-0">Ultimas 6 horas</h2>
                     </div>
                   </Row>
                 </CardHeader>
                 <CardBody>
                   {/* Chart */}
                   <div className="chart">
-                    <Line
-                      data={{
-                        labels: this.state.labels,
-                        datasets: [
-                          {
-                            label: "Entradas",
-                            data: this.state.data
-                          }
-                        ]
-                      }}
-                      options={{
-                        scales: {
-                          yAxes: [
-                            {
-                              gridLines: {
-                                color: "#212529",
-                                zeroLineColor: "#212529"
-                              },
-                              ticks: {
-                                callback: function(value) {
-                                  if (!(value % 10)) {
-                                    return value;
-                                  }
-                                }
-                              }
-                            }
-                          ]
-                        },
-                        tooltips: {
-                          callbacks: {
-                            label: function(item, data) {
-                              var label = data.datasets[item.datasetIndex].label || "";
-                              var yLabel = item.yLabel;
-                              var content = "";
-                    
-                              if (data.datasets.length > 1) {
-                                content += label;
-                              }
-                    
-                              content += yLabel;
-                              return content;
-                            }
-                          }
-                        }
-                      }}
-                      getDatasetAtEvent={e => console.log(e)}
-                    />
+                    <Line data={this.state.chartData}/>
                   </div>
                 </CardBody>
               </Card>
