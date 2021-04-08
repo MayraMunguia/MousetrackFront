@@ -16,7 +16,6 @@
 
 */
 import Index from "views/Index.js";
-import QRReader from "views/QRReader.js"
 /* import Profile from "views/examples/Profile.js";
 import Maps from "views/examples/Maps.js";
 import Register from "views/examples/Register.js";
@@ -30,13 +29,6 @@ var routes = [
     name: "Estadisticas",
     icon: "ni ni-sound-wave text-primary",
     component: Index,
-    layout: "/admin"
-  },
-  {
-    path: "/qr-read",
-    name: "Leer QR",
-    icon: "ni ni-badge text-red",
-    component: QRReader,
     layout: "/admin"
   },
 /*   {

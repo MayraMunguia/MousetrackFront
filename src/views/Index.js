@@ -58,7 +58,7 @@ class Index extends React.Component {
 
   getData(apiEndpoint) {
     console.log("Getting chart data...");
-    fetch(apiEndpoint)
+    fetch(apiEndpoint, {method: 'POST'})
     .then(res => res.json())
     .then(res => {
       let readings = res.res.map(i => i.toString())
@@ -132,9 +132,9 @@ class Index extends React.Component {
                 <CardHeader className="bg-transparent">
                   <Row className="align-items-center">
                     <div className="col">
-                      <h6 className="text-uppercase text-light ls-1 mb-1">
-                        Lecturas
-                      </h6>
+                      <h3 className="text-uppercase text-light ls-1 mb-1">
+                        % de Luz recibido por jardin
+                      </h3>
                     </div>
                   </Row>
                 </CardHeader>
