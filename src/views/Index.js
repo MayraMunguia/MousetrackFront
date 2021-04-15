@@ -1,153 +1,61 @@
-/*!
-
-=========================================================
-* Argon Dashboard React - v1.1.0
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/argon-dashboard-react
-* Copyright 2019 Creative Tim (https://www.creative-tim.com)
-* Licensed under MIT (https://github.com/creativetimofficial/argon-dashboard-react/blob/master/LICENSE.md)
-
-* Coded by Creative Tim
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-*/
 import React from "react";
-// node.js library that concatenates classes (strings)
-import classnames from "classnames";
-// javascipt plugin for creating charts
-import Chart from "chart.js";
-// react plugin used to create charts
-import { Line } from "react-chartjs-2";
-// reactstrap components
-import {
-  Card,
-  CardHeader,
-  CardBody,
-  Container,
-  Row,
-  Col,
-  Alert
-} from "reactstrap";
 
-// core components
-import {
-  chartOptions,
-  parseOptions,
-} from "variables/charts.js";
-
-import Header from "components/Headers/Header.js";
-
-import trae from "trae";
 
 class Index extends React.Component {
   constructor(props){
     super(props);
     this.state = {
-      outliers: [],
-      chartData: {}
+      message: "hi",
+      mouseX : "250px",
+      mouseY: "630px"
     };
-    if (window.Chart) {
-      parseOptions(Chart, chartOptions());
+    // if (window.Chart) {
+    //   parseOptions(Chart, chartOptions());
+    // }
+  }
+
+  handleClick() {
+    console.log('First Answer Clicked');
+    this.setState({mouseX: "250px", mouseY: "630px"})
+  }
+
+  handleClick2() {
+    console.log('Second Answer Clicked');
+  }
+
+    movement(e){
+      let mx = e.clientX;
+      let my = e.clientY;
+      let msg = 'Mouse position:' + mx + ","+ my
+      console.log(msg);
+      this.setState({message: msg, mouseX: my, mouseY: mx})
     }
-    this.getData = this.getData.bind(this);
-  }
-
-  getData(apiEndpoint) {
-    console.log("Getting chart data...");
-    fetch(apiEndpoint, {method: 'POST'})
-    .then(res => res.json())
-    .then(res => {
-      let readings = res.res.map(i => i.toString())
-      let data = {
-        labels: [...Array(readings.length).keys()].map(i => i.toString()),
-        datasets: [
-          {
-            type: 'line',
-            label: 'upper',
-            borderColor: 'rgb(239, 39, 27)',
-            borderWidth: 2,
-            fill: false,
-            data: Array(readings.length).fill(res.limSuper),
-          },
-          {
-            type: 'line',
-            label: 'lower',
-            borderColor: 'rgb(239, 39, 27)',
-            borderWidth: 2,
-            fill: false,
-            data: Array(readings.length).fill(res.limInfer),
-          },
-          {
-            type: 'line',
-            label: 'readings',
-            borderColor: 'rgb(22, 224, 189)',
-            borderWidth: 2,
-            fill: false,
-            data: readings,
-          }
-        ]
-      };
-
-      let outliers = readings.filter(e => e > res.limSuper || e < res.limInfer);
-
-      this.setState({chartData: data, outliers: outliers});
-    })
-    .catch(err => console.error(err));
-  }
-
+  
   componentDidMount() {
-    // CONFIGURE API REST HERE
-    this.getData("http://your_ip_here:1108/api/Stats")
+
   }
 
   render() {
-    const OutlierList = (props) => { 
-    return (
-      <Alert color="danger">
-        <span>Se han identificado los siguientes outliers:</span>
-        <ul>
-          {props.outliers.map(outlier => (
-              <li>{outlier.toString()}</li>               
-          ))}
-        </ul>
-      </Alert>
-      )
-    }
+    const stylebod = {margin: '0px',padding: '0px'};
     return (
       <>
-        <Header />
-        {/* Page content */}
-        <Container className="mt--7" fluid>
-        {this.state.outliers.length > 0 &&
-        (
-          <OutlierList outliers={this.state.outliers}/>
-        )}
-          <Row>
-            <Col className="mb-5 mb-xl-0" xl="12">
-              <Card className="bg-gradient-default shadow">
-                <CardHeader className="bg-transparent">
-                  <Row className="align-items-center">
-                    <div className="col">
-                      <h3 className="text-uppercase text-light ls-1 mb-1">
-                        % de Luz recibido por jardin
-                      </h3>
-                    </div>
-                  </Row>
-                </CardHeader>
-                <CardBody>
-                  {/* Chart */}
-                  <div className="chart">
-                    <Line data={this.state.chartData}/>
-                  </div>
-                </CardBody>
-              </Card>
-            </Col>
-          </Row>
-        </Container>
+
+ <h1>{this.state.message}</h1>
+  <body style={{margin: '0px',padding: '0px'}}>
+    <canvas id="myCanvas" width="1200" height="600" style={{cursor: "none",zIndex:"1"}} onMouseMove={(e) =>{this.movement(e.nativeEvent)}}></canvas>
+    <input type="button" onClick={() => {this.handleClick()}} style={{zIndex:"2", position:"absolute", top:"211px", left:"247px", width:"200px", height:"200px"}} value="Answer #1"/>
+        <input type="button" onClick={() => {this.handleClick()}} style={{zIndex:"2", position:"absolute", top:"211px", right:"247px", width:"200px", height:"200px"}} value="Answer #2"/>
+    
+    
+<img id="cursor" src=
+"https://media.geeksforgeeks.org/wp-content/uploads/20200319212118/cursor2.png"
+        style={{zIndex:"2", position:"absolute", top:this.state.mouseX, left:this.state.mouseY, width:"15px", height:"20px"}}/>
+        
+    
+    
+    
+    </body>
+    <script></script>
       </>
     );
   }
